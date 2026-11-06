@@ -1,0 +1,14 @@
+# Extras for this folder. Install in the same venv as Kronos, after its own requirements:
+#   pip install -r <KRONOS_REPO>/requirements.txt
+#   pip install -r requirements.txt
+yfinance>=1.2
+flask>=2.3
+scipy>=1.13
+anthropic>=0.95,<1
+
+# Only for t4_webui.py, together with <KRONOS_REPO>/webui/requirements.txt:
+#   pip install playwright
+#   playwright install chromium
+#
+# Only for paper_repro/p1_data.py, p3_score.py and p4_floor.py, in a separate venv, as Kronos pins pandas 2.2.2:
+#   pip install pyqlib

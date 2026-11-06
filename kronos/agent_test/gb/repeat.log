@@ -1,0 +1,18 @@
+scratch restarted
+haiku repeat running {'finished': 0, 'running': 0, 'queued': 0, 'failed': 0, 'cancelled': 0, 'pending': 12} spent 0.0 0s
+haiku repeat running {'finished': 0, 'running': 2, 'queued': 0, 'failed': 0, 'cancelled': 0, 'pending': 10} spent 0.0223 60s
+haiku repeat running {'finished': 0, 'running': 2, 'queued': 0, 'failed': 0, 'cancelled': 0, 'pending': 10} spent 0.044 120s
+haiku repeat running {'finished': 2, 'running': 2, 'queued': 0, 'failed': 0, 'cancelled': 0, 'pending': 8} spent 0.0609 180s
+haiku repeat running {'finished': 2, 'running': 2, 'queued': 0, 'failed': 0, 'cancelled': 0, 'pending': 8} spent 0.0882 240s
+haiku repeat running {'finished': 4, 'running': 2, 'queued': 0, 'failed': 0, 'cancelled': 0, 'pending': 6} spent 0.106 300s
+haiku repeat running {'finished': 4, 'running': 2, 'queued': 0, 'failed': 0, 'cancelled': 0, 'pending': 6} spent 0.1323 360s
+haiku repeat running {'finished': 4, 'running': 2, 'queued': 0, 'failed': 0, 'cancelled': 0, 'pending': 6} spent 0.1532 420s
+haiku repeat running {'finished': 6, 'running': 2, 'queued': 0, 'failed': 0, 'cancelled': 0, 'pending': 4} spent 0.1804 480s
+haiku repeat running {'finished': 6, 'running': 2, 'queued': 0, 'failed': 0, 'cancelled': 0, 'pending': 4} spent 0.1958 540s
+haiku repeat running {'finished': 8, 'running': 2, 'queued': 0, 'failed': 0, 'cancelled': 0, 'pending': 2} spent 0.2158 600s
+haiku repeat running {'finished': 8, 'running': 2, 'queued': 0, 'failed': 0, 'cancelled': 0, 'pending': 2} spent 0.2432 660s
+haiku repeat running {'finished': 9, 'running': 2, 'queued': 0, 'failed': 0, 'cancelled': 0, 'pending': 1} spent 0.264 720s
+haiku repeat running {'finished': 10, 'running': 2, 'queued': 0, 'failed': 0, 'cancelled': 0, 'pending': 0} spent 0.289 780s
+haiku repeat running {'finished': 10, 'running': 2, 'queued': 0, 'failed': 0, 'cancelled': 0, 'pending': 0} spent 0.3094 840s
+haiku repeat finished {'finished': 12, 'running': 0, 'queued': 0, 'failed': 0, 'cancelled': 0, 'pending': 0} spent 0.3216 900s
+REPEAT DONE

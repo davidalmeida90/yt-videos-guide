@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kronos Desk</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
+<style>
+:root { --bg:#FFFFFF; --ink:#111111; --text:#141414; --mute:#6B7280; --dim:#A3A8B0; --line:#E2E4E8; --grid:#EEF0F3; --gold:#D4A017; --gold-ink:#8A6A06; --band:#F6EBC6; --blue:#2E6CB4; --sans:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace; }
+* { box-sizing:border-box; }
+html,body { margin:0; height:100%; background:var(--bg); color:var(--text); font-family:var(--sans); }
+body { display:grid; grid-template-rows:auto 1fr; overflow:hidden; }
+header { display:flex; align-items:center; gap:22px; padding:14px 22px 12px; border-bottom:1px solid var(--line); }
+header h1 { font-size:20px; font-weight:700; letter-spacing:.02em; margin:0 8px 0 0; }
+.ctl { display:flex; align-items:baseline; gap:7px; font-size:12px; color:var(--mute); }
+select,input[type=date] { font:600 14px var(--mono); color:var(--ink); background:transparent; border:0; border-bottom:1px solid var(--line); padding:3px 2px; }
+button { font:600 14px var(--sans); color:var(--ink); background:transparent; border:1px solid var(--ink); padding:7px 16px; cursor:pointer; }
+button.primary { background:var(--ink); color:#fff; }
+button:disabled { opacity:.35; cursor:default; }
+.spacer { flex:1; }
+.tag { font:500 12px var(--mono); color:var(--mute); }
+main { display:grid; grid-template-columns:minmax(0,1fr) 440px; min-height:0; }
+#left { display:grid; grid-template-rows:minmax(0,1fr) 92px; min-height:0; border-right:1px solid var(--line); }
+#chartWrap { position:relative; min-height:0; }
+#chart { position:absolute; inset:0; }
+#legend { position:absolute; left:18px; top:12px; z-index:5; font:500 13px var(--mono); color:var(--mute); display:flex; gap:18px; pointer-events:none; }
+#legend b { color:var(--ink); }
+#headline { position:absolute; left:18px; top:38px; z-index:5; font-size:30px; font-weight:700; line-height:1.15; pointer-events:none; max-width:70%; }
+#headline small { display:block; font:500 14px var(--sans); color:var(--mute); margin-top:4px; }
+#surp { border-top:1px solid var(--line); position:relative; }
+#surp .cap { position:absolute; left:18px; top:6px; font:500 12px var(--mono); color:var(--mute); }
+#surpCv { width:100%; height:100%; display:block; }
+aside { overflow:hidden; display:flex; flex-direction:column; min-height:0; }
+section { padding:14px 20px; border-bottom:1px solid var(--line); }
+section h2 { font:600 12px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--mute); margin:0 0 9px; }
+.stats { display:grid; grid-template-columns:1fr 1fr; gap:6px 16px; }
+.stat b { display:block; font:600 25px var(--mono); color:var(--ink); }
+.stat span { font-size:12px; color:var(--mute); }
+#nextCv { width:100%; height:128px; display:block; }
+#histCv { width:100%; height:92px; display:block; margin-top:6px; }
+table { width:100%; border-collapse:collapse; font:500 13px var(--mono); }
+td,th { padding:2px 0; text-align:right; font-weight:500; }
+td:first-child,th:first-child { text-align:left; }
+th { color:var(--mute); font-size:11px; }
+tr.hot td { color:var(--gold-ink); font-weight:700; }
+#tokens td:nth-child(n+3) { color:var(--blue); }
+.row { display:flex; justify-content:space-between; font:500 13px var(--mono); padding:2px 0; }
+.row b { font-weight:700; }
+#score { flex:1; }
+</style>
+</head>
+<body>
+<header>
+  <h1>KRONOS DESK</h1>
+  <label class="ctl">Asset <select id="ticker"><option>NVDA</option><option>SPY</option><option>AAPL</option><option>TSLA</option><option>GLD</option><option>BTC-USD</option></select></label>
+  <label class="ctl">Bars <select id="interval"><option value="1d">Daily</option><option value="1h">Hourly</option></select></label>
+  <label class="ctl">Knows data up to <input type="date" id="asof"></label>
+  <label class="ctl">Candles ahead <select id="h"><option>5</option><option>10</option><option selected>15</option><option>20</option></select></label>
+  <button id="load">Load</button>
+  <button id="gen" class="primary">Generate</button>
+  <button id="replay" disabled>Reveal what happened</button>
+  <span class="spacer"></span>
+  <span class="tag" id="info">Kronos-small, 100 bars, eval mode</span>
+</header>
+<main>
+  <div id="left">
+    <div id="chartWrap">
+      <div id="chart"></div>
+      <div id="legend"><span><b id="tk">NVDA</b></span><span>Real candles black and white</span><span style="color:var(--gold-ink)">Kronos candles gold</span><span style="color:var(--blue)">30 sampled paths</span></div>
+      <div id="headline"></div>
+    </div>
+    <div id="surp"><div class="cap">Surprise: how unlikely the model found each candle, in bits</div><canvas id="surpCv"></canvas></div>
+  </div>
+  <aside>
+    <section>
+      <h2>Next candle, like the next word</h2>
+      <canvas id="nextCv"></canvas>
+      <canvas id="histCv"></canvas>
+      <div class="row" style="margin-top:6px"><span>Chance next close is higher</span><b id="upProb">-</b></div>
+      <div class="row"><span>Middle 80% of next close</span><b id="rng80">-</b></div>
+    </section>
+    <section>
+      <h2>Candles as tokens</h2>
+      <table id="tokens"><thead><tr><th>Date</th><th>Close</th><th>Coarse</th><th>Fine</th></tr></thead><tbody></tbody></table>
+    </section>
+    <section>
+      <h2>Forecast</h2>
+      <div class="stats">
+        <div class="stat"><b id="sUp">-</b><span>paths ending higher</span></div>
+        <div class="stat"><b id="sMed">-</b><span>median move</span></div>
+        <div class="stat"><b id="sBand">-</b><span>10th to 90th percentile</span></div>
+        <div class="stat"><b id="sVol">-</b><span>volatility vs last 20 bars</span></div>
+      </div>
+    </section>
+    <section id="score">
+      <h2>Reveal</h2>
+      <div class="row"><span>Candles revealed</span><b id="rN">-</b></div>
+      <div class="row"><span>Forecast move</span><b id="rF">-</b></div>
+      <div class="row"><span>Actual move</span><b id="rA">-</b></div>
+      <div class="row"><span>Inside the 10 to 90 band</span><b id="rB">-</b></div>
+    </section>
+  </aside>
+</main>
+<script src="/static/lightweight-charts.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const q = new URLSearchParams(location.search);
+for (const k of ['ticker','interval','h']) if (q.get(k)) $(k).value = q.get(k);
+$('asof').value = q.get('as_of') || '';
+const GOLD = '#D4A017', INK = '#111111', BLUE = '#2E6CB4';
+
+const chart = LightweightCharts.createChart($('chart'), {
+  autoSize: true,
+  layout: { background: { color: '#FFFFFF' }, textColor: '#6B7280', fontFamily: 'IBM Plex Mono', fontSize: 13, attributionLogo: true },
+  grid: { vertLines: { visible: false }, horzLines: { color: '#EEF0F3' } },
+  rightPriceScale: { borderVisible: false, scaleMargins: { top: 0.2, bottom: 0.06 } },
+  timeScale: { borderVisible: false, rightOffset: 4, barSpacing: 13 },
+  crosshair: { mode: 0, vertLine: { visible: false, labelVisible: false }, horzLine: { visible: false, labelVisible: false } },
+  handleScroll: false, handleScale: false,
+});
+const real = chart.addCandlestickSeries({ upColor: '#FFFFFF', downColor: INK, borderUpColor: INK, borderDownColor: INK, wickUpColor: INK, wickDownColor: INK, priceLineVisible: false, lastValueVisible: false });
+const ghost = chart.addCandlestickSeries({ upColor: 'rgba(212,160,23,0.12)', downColor: GOLD, borderUpColor: GOLD, borderDownColor: GOLD, wickUpColor: GOLD, wickDownColor: GOLD, priceLineVisible: false, lastValueVisible: false });
+let paths = [], med = null, bandHi = null, bandLo = null, state = {};
+
+function clearForecast() {
+  paths.forEach(s => chart.removeSeries(s)); paths = [];
+  for (const s of [med, bandHi, bandLo]) if (s) chart.removeSeries(s);
+  med = bandHi = bandLo = null; ghost.setData([]);
+  for (const id of ['sUp','sMed','sBand','sVol','rN','rF','rA','rB']) $(id).textContent = '-';
+  $('headline').innerHTML = ''; $('replay').disabled = true;
+}
+const params = () => `ticker=${encodeURIComponent($('ticker').value)}&interval=${$('interval').value}` + ($('asof').value ? `&as_of=${$('asof').value}` : '');
+const pct = (v, d = 1) => `${v >= 0 ? '+' : '−'}${Math.abs(v).toFixed(d)}%`;
+
+async function load() {
+  clearForecast();
+  $('tk').textContent = $('ticker').value;
+  const d = await (await fetch(`/api/bars?${params()}&show=${q.get('show') || 70}`)).json();
+  state = { future: d.future, last: d.history[d.history.length - 1].close, history: d.history, revealed: 0 };
+  real.setData(d.history);
+  if (!$('asof').value) $('asof').value = d.as_of.slice(0, 10);
+  chart.timeScale().fitContent();
+  await Promise.all([loadNext(), loadTokens(), loadSurprise()]);
+  window.__ready = true;
+}
+
+async function loadTokens() {
+  const t = await (await fetch(`/api/tokens?${params()}&k=${q.get('tokens') || 7}`)).json();
+  const tb = $('tokens').tBodies[0]; tb.innerHTML = '';
+  t.forEach((r, i) => { const tr = tb.insertRow(); if (i === t.length - 1) tr.className = 'hot';
+    tr.innerHTML = `<td>${r.time.slice(5)}</td><td>${r.close.toFixed(2)}</td><td>${r.s1}</td><td>${r.s2}</td>`; });
+}
+
+function hiDpi(cv) { const r = cv.getBoundingClientRect(), s = devicePixelRatio || 1; cv.width = r.width * s; cv.height = r.height * s; const c = cv.getContext('2d'); c.setTransform(s, 0, 0, s, 0, 0); return [c, r.width, r.height]; }
+
+async function loadNext() {
+  const n = await (await fetch(`/api/next?${params()}`)).json();
+  state.next = n;
+  drawNext(n);
+  $('upProb').textContent = (n.up_prob * 100).toFixed(0) + '%';
+  $('rng80').textContent = `${pct(n.p10)} to ${pct(n.p90)}`;
+}
+
+function drawNext(n) {
+  const [c, W, H] = hiDpi($('nextCv'));
+  c.clearRect(0, 0, W, H);
+  const cs = n.candidates, hi = Math.max(...cs.map(x => x.high), n.last), lo = Math.min(...cs.map(x => x.low), n.last);
+  const top = 6, bot = H - 36, y = v => top + (hi - v) / (hi - lo || 1) * (bot - top), bw = W / cs.length, maxP = Math.max(...cs.map(x => x.prob));
+  c.strokeStyle = '#E2E4E8'; c.setLineDash([3, 3]); c.beginPath(); c.moveTo(0, y(n.last)); c.lineTo(W, y(n.last)); c.stroke(); c.setLineDash([]);
+  cs.forEach((x, i) => {
+    const cx = bw * i + bw / 2, up = x.close >= x.open;
+    c.strokeStyle = GOLD; c.lineWidth = 1.5; c.beginPath(); c.moveTo(cx, y(x.high)); c.lineTo(cx, y(x.low)); c.stroke();
+    c.fillStyle = up ? '#FFF8E6' : GOLD; const yo = y(Math.max(x.open, x.close)), hh = Math.max(2, Math.abs(y(x.open) - y(x.close)));
+    c.fillRect(cx - 10, yo, 20, hh); c.strokeRect(cx - 10, yo, 20, hh);
+    c.fillStyle = '#141414'; c.font = '700 13px IBM Plex Mono'; c.textAlign = 'center'; c.fillText((x.prob * 100).toFixed(1) + '%', cx, H - 19);
+    c.fillStyle = '#6B7280'; c.font = '500 11px IBM Plex Mono'; c.fillText(pct(x.move), cx, H - 5);
+  });
+  const [h, W2, H2] = hiDpi($('histCv'));
+  const w = n.hist.weights, e = n.hist.edges, m = Math.max(...w) || 1, x = v => (v - e[0]) / (e[e.length - 1] - e[0]) * W2;
+  h.clearRect(0, 0, W2, H2);
+  w.forEach((v, i) => { const b = v / m * (H2 - 18); h.fillStyle = e[i] >= 0 ? GOLD : '#A3A8B0'; h.fillRect(x(e[i]) + .5, H2 - 16 - b, x(e[i + 1]) - x(e[i]) - 1, b); });
+  h.fillStyle = '#6B7280'; h.font = '500 11px IBM Plex Mono'; h.textAlign = 'left'; h.fillText('−10%', 0, H2 - 3); h.textAlign = 'center'; h.fillText('next close, change from last', W2 / 2, H2 - 3); h.textAlign = 'right'; h.fillText('+10%', W2, H2 - 3);
+  if (n.actual) state.actualNext = n.actual;
+}
+
+async function loadSurprise() {
+  const s = await (await fetch(`/api/surprise?${params()}&days=${q.get('show') || 70}`)).json();
+  state.surprise = s; drawSurprise(s);
+}
+function drawSurprise(s) {
+  const [c, W, H] = hiDpi($('surpCv')); c.clearRect(0, 0, W, H);
+  if (!s.length) return;
+  const v = s.map(r => r[1]), mx = Math.max(...v), mn = Math.min(...v), n = v.length, bw = (W - 70) / n, hi = v.indexOf(mx);
+  v.forEach((b, i) => { const h = (b - mn + 0.4) / (mx - mn + 0.4) * (H - 30); c.fillStyle = i === hi ? GOLD : '#CFD6E0'; c.fillRect(i * bw + 12, H - 8 - h, Math.max(2, bw - 2), h); });
+  c.fillStyle = '#8A6A06'; c.font = '700 12px IBM Plex Mono'; c.textAlign = hi > n * .7 ? 'right' : 'left'; c.fillText(`${s[hi][0]}  ${mx.toFixed(1)} bits`, hi * bw + 12 + (hi > n * .7 ? -6 : bw + 4), 32);
+}
+
+// The charting library rewrites the objects it is given, so it always gets copies.
+function f_setGhost(m) { ghost.setData(m.median_path.map(c => ({ ...c }))); }
+
+function generate() {
+  return new Promise(res => {
+    clearForecast();
+    const h = +$('h').value, n = +(q.get('paths') || 30);
+    $('gen').disabled = true;
+    const hist = state.history, lastT = hist[hist.length - 1].time, last = state.last;
+    const series = [], data = [];
+    for (let i = 0; i < n; i++) { const s = chart.addLineSeries({ color: 'rgba(46,108,180,0.26)', lineWidth: 1, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false }); series.push(s); data.push([{ time: lastT, value: last }]); }
+    paths = series;
+    const es = new EventSource(`/api/stream?${params()}&h=${h}&n=${n}&seed=${q.get('seed') || 0}&delay=${q.get('delay') || 0}`);
+    const ghosts = [];
+    es.onmessage = ev => {
+      const m = JSON.parse(ev.data);
+      if (m.type === 'step') {
+        m.close.forEach((v, i) => { data[i].push({ time: m.time, value: v }); series[i].update({ time: m.time, value: v }); });
+        ghosts.push(m.first_path); ghost.update(m.first_path);
+        $('headline').innerHTML = `Writing candle ${m.step + 1} of ${h}<small>${n} paths, one token at a time</small>`;
+        chart.timeScale().fitContent();
+      } else {
+        es.close();
+        f_setGhost(m);
+        med = chart.addLineSeries({ color: GOLD, lineWidth: 3, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
+        med.setData([{ time: lastT, value: last }, ...m.times.map((t, i) => ({ time: t, value: m.median[i] }))]);
+        const opt = { color: '#8A6A06', lineWidth: 1, lineStyle: 2, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false };
+        bandHi = chart.addLineSeries(opt); bandLo = chart.addLineSeries(opt);
+        bandHi.setData(m.times.map((t, i) => ({ time: t, value: m.band_high[i] }))); bandLo.setData(m.times.map((t, i) => ({ time: t, value: m.band_low[i] })));
+        $('sUp').textContent = (m.up_share * 100).toFixed(0) + '%';
+        $('sMed').textContent = pct(m.p50);
+        $('sBand').textContent = `${pct(m.p10, 0)} / ${pct(m.p90, 0)}`;
+        $('sVol').textContent = m.vol_ratio.toFixed(2) + 'x';
+        $('headline').innerHTML = `${(m.up_share * 100).toFixed(0)}% of paths end higher<small>Median ${pct(m.p50)} over ${h} candles</small>`;
+        state.final = m; state.revealed = 0;
+        $('gen').disabled = false;
+        $('replay').disabled = !state.future.length;
+        chart.timeScale().fitContent();
+        window.__generated = true;
+        res();
+      }
+    };
+  });
+}
+
+async function reveal() {
+  const f = state.final; if (!f) return;
+  $('replay').disabled = true;
+  const pace = +(q.get('pace') || 550), fut = state.future.slice(0, f.times.length);
+  const t0 = state.last;
+  // Real candles print over the model's: fade the sampled paths, and each gold candle gives way as its real one lands.
+  paths.forEach(s => s.applyOptions({ color: 'rgba(46,108,180,0.08)' }));
+  let inside = 0;
+  for (let i = 0; i < fut.length; i++) {
+    const day = f.times[i];
+    real.update({ ...fut[i] });
+    ghost.setData(f.median_path.slice(i + 1).map(c => ({ ...c })));
+    const a = (fut[i].close / t0 - 1) * 100, fc = (f.median[i] / t0 - 1) * 100;
+    inside += fut[i].close >= f.band_low[i] && fut[i].close <= f.band_high[i];
+    $('rN').textContent = `${i + 1} of ${f.times.length}`; $('rF').textContent = pct(fc); $('rA').textContent = pct(a);
+    $('rB').textContent = `${inside} of ${i + 1}`;
+    $('headline').innerHTML = `Model ${pct(fc)}, market ${pct(a)}<small>${typeof day === 'string' ? day : new Date(day * 1000).toISOString().slice(0, 16).replace('T', ' ')}</small>`;
+    await new Promise(r => setTimeout(r, pace));
+  }
+  window.__revealed = true;
+}
+
+$('load').onclick = load; $('gen').onclick = generate; $('replay').onclick = reveal;
+load();
+window.__api = { load, generate, reveal };
+</script>
+</body>
+</html>

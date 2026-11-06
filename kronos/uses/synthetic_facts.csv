@@ -1,0 +1,10 @@
+ticker,source,daily_vol_%,excess_kurtosis,autocorr_returns,autocorr_abs_returns,worst_day_%,best_day_%,drift_%_per_day,high_low_range_%
+SPY,Kronos paths,1.081,5.727,0.014,0.087,-11.186,4.679,-0.082,1.466
+SPY,Real bars after,1.037,16.931,-0.067,0.021,-6.033,9.986,0.052,1.077
+SPY,Bootstrap,0.897,9.471,-0.018,-0.018,-6.033,9.986,0.092,
+NVDA,Kronos paths,3.512,7.497,0.026,0.107,-30.278,24.852,-0.191,4.674
+NVDA,Real bars after,2.956,4.697,-0.089,0.046,-18.595,17.162,0.094,3.423
+NVDA,Bootstrap,3.113,6.395,-0.02,-0.015,-18.595,21.809,0.419,
+KO,Kronos paths,1.207,13.517,0.06,0.121,-15.957,6.945,-0.072,1.798
+KO,Real bars after,1.117,1.861,-0.08,0.042,-4.543,4.875,0.057,1.504
+KO,Bootstrap,0.897,3.039,-0.009,-0.044,-4.954,4.617,0.031,

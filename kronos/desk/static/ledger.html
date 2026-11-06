@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Kronos Forward Test</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
+<style>
+:root { --ink:#111; --mute:#6B7280; --line:#E2E4E8; --gold:#8A6A06; --blue:#2E6CB4; }
+* { box-sizing:border-box; }
+html,body { margin:0; height:100%; background:#fff; color:var(--ink); font-family:'IBM Plex Sans',system-ui,sans-serif; }
+body { padding:34px 48px; overflow:hidden; display:flex; flex-direction:column; gap:22px; }
+h1 { margin:0; font-size:38px; font-weight:700; }
+p.sub { margin:6px 0 0; color:var(--mute); font-size:17px; }
+#board { display:grid; grid-template-columns:repeat(5,1fr); gap:28px; border-top:1px solid var(--ink); border-bottom:1px solid var(--line); padding:18px 0; }
+.k b { display:block; font:600 36px 'IBM Plex Mono',monospace; }
+.k span { font-size:14px; color:var(--mute); }
+.k.gold b { color:var(--gold); }
+#filters { display:flex; gap:18px; font:500 14px 'IBM Plex Mono',monospace; color:var(--mute); }
+#filters a { cursor:pointer; padding-bottom:3px; }
+#filters a.on { color:var(--ink); border-bottom:2px solid var(--ink); }
+#wrap { flex:1; min-height:0; overflow:hidden; }
+table { width:100%; border-collapse:collapse; font:500 16px 'IBM Plex Mono',monospace; }
+th { font-size:13px; font-weight:500; color:var(--mute); text-align:right; padding:6px 0; border-bottom:1px solid var(--line); }
+td { text-align:right; padding:7px 0; border-bottom:1px solid #F2F3F5; }
+td:nth-child(-n+2), th:nth-child(-n+2) { text-align:left; }
+td.open { color:var(--mute); }
+td.right { color:var(--ink); font-weight:700; }
+td.wrong { color:var(--mute); text-decoration:line-through; }
+</style></head>
+<body>
+<div><h1>Kronos forward test</h1><p class="sub">Every forecast dated before the market moves, 5 sessions ahead, then scored. Each line carries the hash of the one before it.</p></div>
+<div id="board"></div>
+<div id="filters"><a data-m="eval" class="on">Eval mode</a><a data-m="as_shipped">As shipped</a></div>
+<div id="wrap"><table><thead><tr><th>Logged for</th><th>Name</th><th>Paths up</th><th>Median</th><th>10 to 90</th><th>Actual</th><th>Direction</th><th>Guess "up"</th></tr></thead><tbody id="rows"></tbody></table></div>
+<script>
+const s = v => (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(1) + '%';
+let mode = 'eval', all = [];
+function draw() {
+  const e = all.filter(r => r.mode === mode), c = e.filter(r => r.status === 'closed');
+  const mean = (f) => c.length ? c.reduce((a, r) => a + f(r), 0) / c.length : null;
+  const pct = v => v === null ? '-' : v.toFixed(0) + '%', num = v => v === null ? '-' : v.toFixed(2);
+  document.getElementById('board').innerHTML = [
+    ['Forecasts logged', e.length, ''], ['Scored so far', c.length, ''],
+    ['Kronos direction right', pct(mean(r => r.model_right * 100)), 'gold'], ['Guessing "up" right', pct(mean(r => r.always_up_right * 100)), ''],
+    ['Error, Kronos vs no change', c.length ? `${num(mean(r => r.abs_err))} / ${num(mean(r => r.abs_err_no_change))}` : '-', ''],
+  ].map(([k, v, cl]) => `<div class="k ${cl}"><b>${v}</b><span>${k}</span></div>`).join('');
+  document.getElementById('rows').innerHTML = e.map(r => `<tr><td>${r.as_of}</td><td>${r.ticker}</td><td>${(r.up_share * 100).toFixed(0)}%</td><td>${s(r.p50)}</td><td>${s(r.p10)} / ${s(r.p90)}</td>` +
+    (r.status === 'closed' ? `<td>${s(r.actual)}</td><td class="${r.model_right ? 'right' : 'wrong'}">${r.model_right ? 'Right' : 'Wrong'}</td><td class="${r.always_up_right ? 'right' : 'wrong'}">${r.always_up_right ? 'Right' : 'Wrong'}</td>`
+      : `<td class="open">${r.sessions_left ?? ''} left</td><td class="open">open</td><td class="open">open</td>`) + '</tr>').join('');
+  document.querySelectorAll('#filters a').forEach(a => a.classList.toggle('on', a.dataset.m === mode));
+}
+document.querySelectorAll('#filters a').forEach(a => a.onclick = () => { mode = a.dataset.m; draw(); });
+fetch('/api/ledger').then(r => r.json()).then(d => { all = d.entries; draw(); window.__ready = true; });
+</script>
+</body></html>

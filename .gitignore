@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Keys
+.env
+.env.*
+!.env.example
+
+# Video
+*.mp4
+*.mov
+
+# Market data downloads, see kronos/README.md
+kronos/agent_test/data/
+kronos/paper_repro/data_*.csv
+kronos/paper_repro/ref/
+
+# Written by running the code
+kronos/out/*.png
+kronos/out/*.log
+kronos/out/gb/
+kronos/out/review/
+kronos/uses/uses_panel.csv
+kronos/uses/surprise_panel.csv
+kronos/uses/*.log
+kronos/desk/server.log
+kronos/agent_test/gb/pair.json
+kronos/agent_test/gb/trio.json
+kronos/agent_test/gb/scratch*.log
+kronos/paper_repro/*BAD*
+kronos/paper_repro/*.log
+kronos/paper_repro/daily_*.csv
+kronos/paper_repro/results_*.csv
+kronos/paper_repro/rank_ic_*.csv
+kronos/paper_repro/signals_csi800_*.csv

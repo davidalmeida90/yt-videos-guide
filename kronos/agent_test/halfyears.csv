@@ -1,0 +1,12 @@
+period,arm,2023H1,2023H2,2024H1,2024H2,2025H1,2025H2,2026H1,2026H2
+control,Buy and hold,33.5,7.7,23.6,,,,,
+control,Kronos rule,-4.9,7.5,-10.5,,,,,
+control,Floor: mom60,4.6,-0.9,21.0,,,,,
+control,"LLM, no forecast",17.0,5.5,8.0,,,,,
+control,LLM + Kronos,-4.0,11.5,-4.6,,,,,
+test,Buy and hold,,,,14.0,5.5,13.1,9.5,9.5
+test,Kronos rule,,,,3.1,12.1,7.4,1.4,7.3
+test,Floor: mom60,,,,4.6,-13.2,3.0,-2.5,-3.6
+test,"LLM, no forecast",,,,7.6,-18.6,7.6,-6.2,1.2
+test,LLM + Kronos,,,,3.0,7.8,5.4,1.4,5.9
+test,LLM + placebo,,,,-1.5,2.5,3.7,-6.0,4.9

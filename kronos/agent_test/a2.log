@@ -1,0 +1,32 @@
+6012 calls planned: {'none/test': 1404, 'kronos/test': 1404, 'placebo/test': 1404, 'none/control': 900, 'kronos/control': 900}
+200 done, $0.020 spent (upper bound, ignores cache discount), 0 unparsed
+400 done, $0.040 spent (upper bound, ignores cache discount), 0 unparsed
+600 done, $0.060 spent (upper bound, ignores cache discount), 0 unparsed
+800 done, $0.080 spent (upper bound, ignores cache discount), 0 unparsed
+1000 done, $0.100 spent (upper bound, ignores cache discount), 0 unparsed
+1200 done, $0.119 spent (upper bound, ignores cache discount), 0 unparsed
+1400 done, $0.139 spent (upper bound, ignores cache discount), 0 unparsed
+1600 done, $0.159 spent (upper bound, ignores cache discount), 0 unparsed
+1800 done, $0.179 spent (upper bound, ignores cache discount), 0 unparsed
+2000 done, $0.199 spent (upper bound, ignores cache discount), 0 unparsed
+2200 done, $0.219 spent (upper bound, ignores cache discount), 0 unparsed
+2400 done, $0.239 spent (upper bound, ignores cache discount), 0 unparsed
+2600 done, $0.259 spent (upper bound, ignores cache discount), 0 unparsed
+2800 done, $0.280 spent (upper bound, ignores cache discount), 0 unparsed
+3000 done, $0.300 spent (upper bound, ignores cache discount), 0 unparsed
+3200 done, $0.320 spent (upper bound, ignores cache discount), 0 unparsed
+3400 done, $0.340 spent (upper bound, ignores cache discount), 0 unparsed
+3600 done, $0.360 spent (upper bound, ignores cache discount), 0 unparsed
+3800 done, $0.381 spent (upper bound, ignores cache discount), 0 unparsed
+4000 done, $0.401 spent (upper bound, ignores cache discount), 0 unparsed
+4200 done, $0.421 spent (upper bound, ignores cache discount), 0 unparsed
+4400 done, $0.441 spent (upper bound, ignores cache discount), 0 unparsed
+4600 done, $0.461 spent (upper bound, ignores cache discount), 0 unparsed
+4800 done, $0.481 spent (upper bound, ignores cache discount), 0 unparsed
+5000 done, $0.502 spent (upper bound, ignores cache discount), 0 unparsed
+5200 done, $0.522 spent (upper bound, ignores cache discount), 0 unparsed
+5400 done, $0.542 spent (upper bound, ignores cache discount), 0 unparsed
+5600 done, $0.562 spent (upper bound, ignores cache discount), 0 unparsed
+5800 done, $0.583 spent (upper bound, ignores cache discount), 0 unparsed
+6000 done, $0.603 spent (upper bound, ignores cache discount), 0 unparsed
+finished: 6009 new calls, $0.604 total upper bound, 0 unparsed
