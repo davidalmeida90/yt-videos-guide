@@ -5,6 +5,7 @@ Code behind the YouTube videos. Each video has its own folder with its code and,
 | Video | Folder |
 |---|---|
 | Kronos (coming soon) | [kronos/](kronos/) |
+| [Qlib: Microsoft's AI for Quant Research, Tested on Real Data](https://youtu.be/SxEduv5e_nE) | [qlib/](qlib/) |
 
 Research and education only. Nothing here is investment advice.
 
