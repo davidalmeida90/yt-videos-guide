@@ -1,7 +1,7 @@
 # Kronos-Vol: fine-tuning Kronos to forecast volatility
 
 Code behind the YouTube video on fine-tuning [Kronos](https://github.com/shiyu-coder/Kronos), an open source candlestick
-foundation model, to forecast how much a US stock will move in the next session. Video link: coming soon.
+foundation model, to forecast how much a US stock will move in the next session. Video: [Kronos AI Fine Tuned: Volatility Prediction With a Candlestick Model](https://youtu.be/248IxtRoiQg).
 
 - Published model: [huggingface.co/ddedei/Kronos-Vol](https://huggingface.co/ddedei/Kronos-Vol) (MIT)
 - Dashboard used in the video: [LooksFine](https://github.com/davidalmeida90/looksfine)
