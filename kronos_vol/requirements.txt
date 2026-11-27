@@ -1,0 +1,15 @@
+# Versions that ran in the video (Python 3.11, Windows 11, NVIDIA RTX 4050 laptop GPU, CUDA 12.4).
+# Install PyTorch with CUDA first, then the rest:
+#   pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cu124
+#   pip install -r requirements.txt
+torch==2.6.0
+numpy==2.4.4
+pandas==2.2.3
+pyarrow==24.0.0
+scikit-learn==1.8.0
+lightgbm==4.7.0
+safetensors==0.8.0
+huggingface_hub==1.33.0
+einops==0.8.1
+tqdm==4.67.3
+requests==2.33.1
